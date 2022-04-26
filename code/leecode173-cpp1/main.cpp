@@ -12,23 +12,39 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-class Solution {
+class BSTIterator {
+private:
+    vector<int> vec;
+    vector<int>::iterator iter;
 public:
 
-    void postorder(TreeNode *root, vector<int> &vec){
+    void inorder(TreeNode* root, vector<int> &vec){
         if(root== nullptr){
             return;
         } else{
-            postorder(root->left,vec);
-            postorder(root->right,vec);
+            inorder(root->left,vec);
             vec.emplace_back(root->val);
+            inorder(root->right,vec);
         }
     }
 
-    vector<int> postorderTraversal(TreeNode* root) {
-        vector<int> vec;
-        postorder(root,vec);
-        return vec;
+    BSTIterator(TreeNode* root) {
+        inorder(root,vec);
+        iter=vec.begin();
+    }
+
+    int next() {
+        int tmp=*iter;
+        iter++;
+        return tmp;
+    }
+
+    bool hasNext() {
+        if(iter==vec.end()){
+            return false;
+        } else{
+            return true;
+        }
     }
 };
 int main() {
