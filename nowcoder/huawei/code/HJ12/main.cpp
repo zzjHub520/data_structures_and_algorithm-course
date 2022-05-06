@@ -1,6 +1,12 @@
 #include <iostream>
-
+#include <algorithm>
+using namespace std;
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    string str;
+    cin>>str;
+    reverse(str.begin(),str.end());
+    cout<<str;
+
     return 0;
 }

@@ -1,50 +1,68 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
+int m, n;
+struct Node {
+    int row;
+    int col;
+};
+vector<Node> now_path;
+void FindPath(int **matrix, int x, int y, vector<Node> &v) {
+    matrix[x][y] = 1;
+    now_path.push_back({x, y});
+    if (x == m - 1 && y == n - 1) {
+        if (v.empty() || now_path.size() < v.size()) { //能保证多条路径时，为最短路径
+            v = now_path;
+        }
+    } else {
+        if (x < m - 1 && matrix[x + 1][y] == 0) {
+            FindPath(matrix, x + 1, y, v);
+        }
+        if (x >= 1 && matrix[x - 1][y] == 0) {
+            FindPath(matrix, x - 1, y, v);
+        }
+        if (y < n - 1 && matrix[x][y + 1] == 0) {
+            FindPath(matrix, x, y + 1, v);
+        }
+        if (y >= 1 && matrix[x][y - 1] == 0) {
+            FindPath(matrix, x, y - 1, v);
+        }
+    }
+    matrix[x][y] = 0;
+    now_path.pop_back();
+}
+
+void Show(const Node &no) {
+    cout << '(' << no.row << ',' << no.col << ')' << endl;
+}
 
 int main() {
+    int temp[5][5] = {{0, 1, 0, 0, 0},
+                      {0, 1, 0, 1, 0},
+                      {0, 0, 0, 0, 0},
+                      {0, 1, 1, 1, 0},
+                      {0, 0, 0, 1, 0}};
 
-    int n, m;
-    cin >> n >> m;
-    vector<vector<int>> maze(n, vector<int>(m, 0));
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
+    cin >> m >> n;
+    int **maze = new int *[m];
+    for (int i = 0; i < m; ++i) {
+        maze[i] = new int[n];
+    }
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
             cin >> maze[i][j];
         }
     }
-    vector<vector<int>> dp(n, vector<int>(m, 0));
-    dp[0][0] = 1;
-    for (int i = 1; i < n; ++i) {
-        if (maze[0][i] == 0) {
-            dp[0][i] = 1;
-        } else {
-            break;
-        }
-    }
-    for (int i = 1; i < m; ++i) {
-        if (maze[i][0] == 0) {
-            dp[i][0] = 1;
-        } else {
-            break;
-        }
-    }
+    vector<Node> vec;
+    now_path.clear();
+    FindPath(maze, 0, 0, vec);
+    for_each(vec.begin(), vec.end(), Show);
 
-    for (int i = 1; i < n; ++i) {
-        for (int j = 1; j < m; ++j) {
-            if (maze[i][j] == 0) {
-                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
-            }
-        }
-    }
-
-
-    for (const auto &eler:dp) {
-        for (auto ele:eler) {
-            cout << ele << " ";
-        }
-        cout << endl;
-    }
+    for (int i = 0; i < m; ++i)
+        delete[] maze[i];
+    delete[] maze;
 
     return 0;
 }
